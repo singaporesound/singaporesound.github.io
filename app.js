@@ -8,7 +8,6 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 
-
 /* ==========================================================
    MARKERS
    Adds markets signifying the sounds
@@ -50,6 +49,17 @@ const soundcloudEmbed = `
 const popupOptions = {
   maxWidth: 300 
 };
+
+
+// Import CSV file with PapaParse to create a marker for each row of data 
+var da = Papa.parse("data/sound_data.csv", {
+    header: true;
+	complete: function(results) {
+		console.log("Finished:", results.data);
+	}
+});
+
+
 
 // Add a simple marker
 var marker1 = L.marker([1.3521, 103.8198], {icon: blue_pin}).addTo(map);
