@@ -22,51 +22,23 @@ var blue_pin = L.icon({
     popupAnchor:  [0, -32] // point from which the popup should open relative to the iconAnchor
 });
 
-var purple_pin = L.icon({
-    iconUrl: "icon/purple_pin.png",
-    iconSize:     [32, 32], // size of the icon
-    iconAnchor:   [16, 32], // point of the icon which will correspond to marker's location
-    popupAnchor:  [0, -32] // point from which the popup should open relative to the iconAnchor
-});
-
-var red_pin = L.icon({
-    iconUrl: "icon/red_pin.png",
-    iconSize:     [32, 32], // size of the icon
-    iconAnchor:   [16, 32], // point of the icon which will correspond to marker's location
-    popupAnchor:  [0, -32] // point from which the popup should open relative to the iconAnchor
-});
-
-
-// Store embedded code into a variable
-const soundcloudEmbed = `
-  <iframe width="100%" height="120" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/soundcloud%253Atracks%253A2219049716&color=%23000000&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false&visual=false"></iframe>
-  <div style="font-size: 10px; color: #cccccc;line-break: anywhere;word-break: normal;overflow: hidden;white-space: nowrap;text-overflow: ellipsis; font-family: Interstate,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Garuda,Verdana,Tahoma,sans-serif;font-weight: 100;">
-    <a href="https://soundcloud.com/eric-y-396302144" title="Eric Y" target="_blank" style="color: #cccccc; text-decoration: none;">Eric Y</a> · <a href="https://soundcloud.com/eric-y-396302144/test-sound-file" title="Test Sound File" target="_blank" style="color: #cccccc; text-decoration: none;">Test Sound File</a>
-  </div>
-`;
 
 // Sets max-width for pop-ups
 const popupOptions = {
   maxWidth: 300 
 };
 
-
-// Import CSV file with PapaParse to create a marker for each row of data 
-var da = Papa.parse("data/sound_data.csv", {
-    header: true;
-	complete: function(results) {
-		console.log("Finished:", results.data);
-	}
-});
-
-
-
-// Add a simple marker
-var marker1 = L.marker([1.3521, 103.8198], {icon: blue_pin}).addTo(map);
-marker1.bindPopup("<b>Downtown!</b><br>This is a test audio." + soundcloudEmbed, popupOptions);
-
-var marker2 = L.marker([1.4521, 103.8198], {icon: purple_pin}).addTo(map);
-marker2.bindPopup("<b>Uptown</b><br> This is a test audio" + soundcloudEmbed, popupOptions);
+// Run through the list of markers in the pinInfo json file and add them to the map
+fetch('pinInfo.json')
+    .then(response => response.json())
+    .then(data => {
+        data.forEach(pin => {
+            const marker = L.marker([pin.latitude, pin.longitude], {icon: blue_pin}).addTo(map);
+            marker.bindPopup(`<b>${pin.title}</b><b><img src="${pin.photoFilePath}" alt="${pin.title}" style="max-width: 100%; height: auto;"></br><br>${pin.description}<br>${pin.embedUrl}`, popupOptions);
+            console.log(`Added marker: ${pin.title} at (${pin.latitude}, ${pin.longitude})`); // Debugging log
+        });
+    })
+    .catch(error => console.error('Error loading pinInfo.json:', error));
 
 
 /* ==========================================================
