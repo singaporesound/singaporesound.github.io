@@ -34,4 +34,9 @@ body {
     display: block;
 }
 
-/* --- CSS for SoundCloud Files in intro --- */
+.leaflet-popup-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center; /* This centers the text inside the paragraphs too */
+}

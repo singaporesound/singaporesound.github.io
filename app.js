@@ -22,6 +22,21 @@ var blue_pin = L.icon({
     popupAnchor:  [0, -32] // point from which the popup should open relative to the iconAnchor
 });
 
+var purple_pin = L.icon({
+    iconUrl: "icon/purple_pin.png",
+    iconSize:     [32, 32], // size of the icon
+    iconAnchor:   [16, 32], // point of the icon which will correspond to marker's location
+    popupAnchor:  [0, -32] // point from which the popup should open relative to the iconAnchor
+});
+
+
+var red_pin = L.icon({
+    iconUrl: "icon/red_pin.png",
+    iconSize:     [32, 32], // size of the icon
+    iconAnchor:   [16, 32], // point of the icon which will correspond to marker's location
+    popupAnchor:  [0, -32] // point from which the popup should open relative to the iconAnchor
+});
+
 
 // Sets max-width for pop-ups
 const popupOptions = {
@@ -29,17 +44,25 @@ const popupOptions = {
 };
 
 // Run through the list of markers in the pinInfo json file and add them to the map
-fetch('pinInfo.json')
+const pinRotation = [red_pin, purple_pin, blue_pin];
+
+fetch('pin_info.json')
     .then(response => response.json())
     .then(data => {
-        data.forEach(pin => {
-            const marker = L.marker([pin.latitude, pin.longitude], {icon: blue_pin}).addTo(map);
-            marker.bindPopup(`<b>${pin.title}</b><b><img src="${pin.photoFilePath}" alt="${pin.title}" style="max-width: 100%; height: auto;"></br><br>${pin.description}<br>${pin.embedUrl}`, popupOptions);
-            console.log(`Added marker: ${pin.title} at (${pin.latitude}, ${pin.longitude})`); // Debugging log
+        // 2. Add 'index' as the second argument in forEach
+        data.forEach((pin, index) => {
+            
+            // 3. Use modulo (%) to rotate through the array (0, 1, 2, 0, 1, 2...)
+            const selectedIcon = pinRotation[index % pinRotation.length];
+
+            const marker = L.marker([pin.latitude, pin.longitude], { icon: selectedIcon }).addTo(map);
+            
+            marker.bindPopup(`<b>${pin.title}</b><br><img src="${pin.photoFilePath}" alt="${pin.title}" style="max-width: 100%; height: 150px;"><br><span class="pin-description">${pin.description}</span><br>${pin.embedUrl}`, popupOptions);
+            
+            console.log(`Added ${index % pinRotation.length} marker: ${pin.title} at (${pin.latitude}, ${pin.longitude})`);
         });
     })
     .catch(error => console.error('Error loading pinInfo.json:', error));
-
 
 /* ==========================================================
    GEO-JSON FILE
